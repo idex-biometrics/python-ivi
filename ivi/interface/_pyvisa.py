@@ -3,6 +3,7 @@
 Python Interchangeable Virtual Instrument Library
 
 Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2023 IDEX Biometrics Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,17 +30,10 @@ import sys
 from distutils.version import StrictVersion
 
 try:
-    import visa
-    try:
-        # New style PyVISA
-        visa_rm = visa.ResourceManager()
-        visa_instrument_opener = visa_rm.open_resource
-    except AttributeError:
-        # Old style PyVISA
-        visa_instrument_opener = visa.instrument
+    import pyvisa
 except ImportError:
     # PyVISA not installed, pass it up
-    raise ImportError
+    raise ImportError('please install PyVISA')
 except:
     # any other error
     e = sys.exc_info()[1]
@@ -51,7 +45,9 @@ class PyVisaInstrument:
     "PyVisa wrapper instrument interface client"
     def __init__(self, resource, *args, **kwargs):
         if type(resource) is str:
-            self.instrument = visa_instrument_opener(resource, *args, **kwargs)
+            backend = kwargs.pop('backend', '')
+            rm = pyvisa.ResourceManager(backend)
+            self.instrument = rm.open_resource(resource, *args, **kwargs)
             # For compatibility with new style PyVISA
             if not hasattr(self.instrument, 'trigger'):
                 self.instrument.trigger = self.instrument.assert_trigger
