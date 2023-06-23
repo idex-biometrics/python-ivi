@@ -27,7 +27,10 @@ THE SOFTWARE.
 
 import io
 import sys
+import logging
 from distutils.version import StrictVersion
+
+log = logging.getLogger(__name__)
 
 try:
     import pyvisa
@@ -55,6 +58,11 @@ class PyVisaInstrument:
             self.instrument = resource
         self.buffer = io.BytesIO()
 
+    def __getattr__(self, attr):
+        if attr not in self.__dict__:
+            return getattr(self.instrument, attr)
+        return super().__getattr__(attr)
+
     def write_raw(self, data):
         "Write binary data to instrument"
         self.instrument.write_raw(data)
@@ -81,7 +89,9 @@ class PyVisaInstrument:
             for message_i in message:
                 self.write(message_i, encoding)
             return
-        self.write_raw(str(message).encode(encoding))
+        # Use pyvisa instead of write_raw 
+        # REVISIT: any issues here for ivi methods using _ask?
+        self.instrument.write(str(message), encoding=encoding)
 
     def read(self, num=-1, encoding = 'utf-8'):
         "Read string from instrument"
