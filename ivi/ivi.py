@@ -1790,7 +1790,6 @@ class Driver(DriverOperation, DriverIdentity, DriverUtility):
 
         # decode options
         for op in keywargs:
-            log.info(f"kwarg: {op}")
             val = keywargs[op]
             if op == 'range_check':
                 self._driver_operation_range_check = bool(val)
@@ -1809,7 +1808,6 @@ class Driver(DriverOperation, DriverIdentity, DriverUtility):
             elif op == 'prefer_pyvisa':
                 self._prefer_pyvisa = bool(val)
             elif op == 'pyvisa_backend':
-                log.info(f"Setting pyvisa_backend={val}")
                 self._pyvisa_backend = val
             else:
                 raise UnknownOptionException('Invalid option')
