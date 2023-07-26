@@ -60,11 +60,15 @@ class dummyScope(
         self._channel_count = 2
         self._bandwidth = 1e9
 
+        # Drop any pyvisa arguments if specified by the user.  We override them below.
+        kwargs.pop('pyvisa_backend', None)
+        kwargs.pop('prefer_pyvisa', None)
+
         # Force the use of the pyvisa-sim backend so that no checking is performed
         # on the visa resource identifier.  We don't actually issue any requests to
         # the backend.
         super(dummyScope, self).__init__(
-            *args, **kwargs, pyvisa_backend='@sim', prefer_pyvisa=True, cache=False
+            *args, **kwargs, pyvisa_backend='@sim', prefer_pyvisa=True
         )
  
         self._identity_description = "Dummy IVI oscilloscope driver for simulation"
