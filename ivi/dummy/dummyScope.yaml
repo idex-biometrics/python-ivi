@@ -1,0 +1,18 @@
+spec: 1.1
+
+devices:
+  Scope:
+    eom:
+      USB INSTR:
+        q: "\n"
+        r: "\n"
+    dialogues:
+      - q: "*CLS"
+      - q: "*IDN?"
+        r: "IDEX,dummyScope,123456789,1.0"
+    error: "ERROR: unrecognized command"
+
+
+resources:
+  USB0::1234::5678::123456789:
+    device: Scope

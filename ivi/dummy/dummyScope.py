@@ -47,11 +47,17 @@ class dummyScope(
     In order to provide the user some control over what values are read back when taking
     measurements, the class provides the ability to set a callback for each of the 
     defined scope.MeasurementFunction's.
+
+    A simple pyvisa-sim YAML configuration file is used to handle the IDN? command.  If
+    further command are needed, then a way to override the default is needed or the 
+    version in python-ivi can be updated.
     
     """
+
+    _yaml = Path(__file__).parent.absolute() / 'dummyScope.yaml'
  
     def __init__(self, *args, **kwargs):
-        
+
         self._instrument_id = 'dummyScope'
         self._analog_channel_name = list()
         self._analog_channel_count = 2
@@ -68,8 +74,11 @@ class dummyScope(
         # on the visa resource identifier.  We don't actually issue any requests to
         # the backend.
         super(dummyScope, self).__init__(
-            *args, **kwargs, pyvisa_backend='@sim', prefer_pyvisa=True
+            *args, **kwargs, pyvisa_backend=f'{str(self._yaml)}@sim', prefer_pyvisa=True
         )
+
+        self._interface.instrument.write_termination = "\n"
+        self._interface.instrument.read_termination  = "\n"
  
         self._identity_description = "Dummy IVI oscilloscope driver for simulation"
         self._identity_identifier = ""
